@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// The generator block runs every time you run `prisma generate`.
+// The prisma-client-js is the default generator that builds ts types based on the db models.
+// You can find more about generators here: https://www.prisma.io/docs/concepts/components/prisma-schema/generators
+generator client {
+  provider = "prisma-client-js"
+}
+
+// The datasource block specifies the url to your DBMS.
+// You only need to set the DATABASE_URL in your environment file.
+// You can find more about datasources here: https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // url      = env("DOCKER_DATABASE_URL")
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  HIDDEN
+}
+
+enum ReactionAction {
+  LIKE
+  RETWEET
+}
+
+model Reaction {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  authorId String @db.Uuid // Foreing Key
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to Many
+
+  postId String @db.Uuid // Foreing Key
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade) // One to Many
+
+  action ReactionAction
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+}
+
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  username String  @unique // Unique constraint
+  name     String? @db.VarChar(35) // Limit display name to 35 characters
+  email    String  @unique // Unique constraint
+  password String
+
+  visibility Visibility @default(PUBLIC)
+
+  profilePicture String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+
+  posts     Post[]
+  follows   Follow[] @relation(name: "follows")
+  followers Follow[] @relation(name: "followers")
+
+  Reaction Reaction[]
+
+  sendedMessages   Message[] @relation(name: "sender")
+  receivedMessages Message[] @relation(name: "receiver")
+}
+
+model Message {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary key
+
+  senderId String @db.Uuid // Foreing Key
+  sender   User   @relation(name: "sender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId String @db.Uuid // Foreing Key
+  receiver   User   @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? // Optional value
+
+  content String @db.VarChar(240)
+}
+
+model Post {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  authorId String   @db.Uuid // Foreign Key
+  content  String   @db.VarChar(240) // Limit the content to 240 characters
+  images   String[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+
+  parentPost   Post?   @relation("PostToPost", fields: [parentPostId], references: [id])
+  parentPostId String? @db.Uuid
+
+  comments Post[] @relation("PostToPost")
+
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  reactions Reaction[] // Changed to plural to denote relation
+}
+
+model Follow {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  followerId String @db.Uuid()
+  followedId String @db.Uuid()
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+
+  follower User @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade) // One to many
+  followed User @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade) // One to many
+}
