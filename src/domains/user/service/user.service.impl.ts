@@ -5,6 +5,7 @@ import { UserRepository } from '../repository';
 import { UserService } from './user.service';
 import { encryptPassword, generatePreSignedUrl } from '@utils';
 import { isUUID } from 'class-validator';
+import { Visibility } from '@prisma/client';
 
 export class UserServiceImpl implements UserService {
   constructor(private readonly repository: UserRepository) {}
@@ -48,11 +49,18 @@ export class UserServiceImpl implements UserService {
 
   async isUserFollowed(followerID: string, followedID: string): Promise<boolean> {
     if (!isUUID(followerID) || !isUUID(followedID)) return false;
+    if (followerID === followedID) return true;
 
     const follow = await this.repository.isUserFollowed(followerID, followedID);
-    if (!follow) throw new ForbiddenException();
-
+    if (!follow) return false;
     return true;
+  }
+
+  async isUserPublic(userId: string): Promise<boolean> {
+    const otherUser = await this.repository.getById(userId);
+    if (!otherUser) throw new NotFoundException();
+    if (otherUser?.visibility === Visibility.PUBLIC) return true;
+    throw new ForbiddenException();
   }
 
   async checkIfUserExists(userId: string): Promise<boolean> {

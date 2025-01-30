@@ -12,7 +12,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 1s
       timeout: 1s
       retries: 15
@@ -26,11 +26,11 @@ services:
     tty: true
     environment:
       - DATABASE_URL=${DOCKER_DATABASE_URL}
-      - PORT=8080
+      - PORT=8081
     env_file:
       - .envrc
     ports:
-      - '8080:8080'
+      - '8081:8081'
     volumes: # if there's any new files containing sources, add them as volumes
       - ./src:/app/src
       - ./prisma:/app/prisma

@@ -323,11 +323,16 @@ userRouter.get('/:userId', async (req: Request, res: Response, next: NextFunctio
   const { userId } = res.locals.context;
 
   try {
-    const result: boolean = await service.isUserFollowed(userId, otherUserId);
+    const isPublic: boolean = await service.isUserPublic(otherUserId);
+    const isFollowing: boolean = await service.isUserFollowed(userId, otherUserId);
+    if (!isPublic && !isFollowing) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
+    }
     const user: UserViewDTO = await service.getUser(otherUserId);
 
     return res.status(HttpStatus.OK).json({
-      isFollowing: result,
+      isPublic,
+      isFollowing,
       user,
     });
   } catch (e) {

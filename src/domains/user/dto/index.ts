@@ -95,10 +95,12 @@ export class UserViewDTO {
     this.name = user.name;
     this.username = user.username;
     this.profilePicture = user.profilePicture;
+    this.visibility = user.visibility;
   }
 
   id: string;
   name: string | null;
   username: string;
   profilePicture: string | null;
+  visibility: Visibility;
 }

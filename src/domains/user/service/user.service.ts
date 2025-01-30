@@ -8,6 +8,7 @@ export interface UserService {
   updateUser: (userId: string, user: UserUpdateInputDTO) => Promise<UserUpdateOutputDTO | null>;
   getUsersContainsUsername: (username: string) => Promise<UserViewDTO[]>;
 
+  isUserPublic: (userId: string) => Promise<boolean>;
   isUserFollowed: (followerID: string, followedID: string) => Promise<boolean>;
   checkIfUserExists: (userId: string) => Promise<boolean>;
 }

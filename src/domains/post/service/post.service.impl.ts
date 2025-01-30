@@ -30,7 +30,7 @@ export class PostServiceImpl implements PostService {
 
     if (data.images?.length) {
       const urls: PreSignedUrl[] = await generatePreSignedUrls(data.images);
-      data.images = urls.map((url) => url.key);
+      data.images = urls.map((url) => url.signedUrl);
     }
     return await this.repository.create(data);
   }
@@ -52,7 +52,7 @@ export class PostServiceImpl implements PostService {
     await this.repository.delete(postId);
   }
 
-  async getPost(userId: string, postId: string): Promise<PostDTO> {
+  async getPost(userId: string, postId: string): Promise<ExtendedPostDTO> {
     const data = new GetPostDTO(userId, postId);
     const errors = await validate(data, {
       whitelist: true,
@@ -120,7 +120,7 @@ export class PostServiceImpl implements PostService {
         post.images = preSignedUrls.map((url) => url.signedUrl);
       }
 
-      if (post.author.profilePicture) {
+      if (post?.author?.profilePicture) {
         const preSignedUrl = await generatePreSignedUrl(post.author.profilePicture);
         post.author.profilePicture = preSignedUrl.signedUrl;
       }

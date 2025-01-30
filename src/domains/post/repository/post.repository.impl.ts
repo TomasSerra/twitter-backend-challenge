@@ -13,7 +13,7 @@ export class PostRepositoryImpl implements PostRepository {
       data: {
         authorId: postData.userId,
         content: postData.content,
-        images: postData.images
+        images: postData.images,
       },
     });
     return new PostDTO(post);
@@ -84,13 +84,25 @@ export class PostRepositoryImpl implements PostRepository {
     });
   }
 
-  async getById(postId: string): Promise<PostDTO | null> {
+  async getById(postId: string): Promise<ExtendedPostDTO | null> {
     const post = await this.db.post.findUnique({
       where: {
         id: postId,
       },
+      include: {
+        author: true,
+        reactions: true,
+        comments: true,
+      },
     });
-    return post != null ? new PostDTO(post) : null;
+    if (post != null) {
+      const qtyLikes = post.reactions.filter((reaction) => reaction.action === ReactionAction.LIKE).length;
+      const qtyRetweets = post.reactions.filter((reaction) => reaction.action === ReactionAction.RETWEET).length;
+      const qtyComments = post.comments.length;
+
+      return new ExtendedPostDTO({ ...post, qtyLikes, qtyRetweets, qtyComments });
+    }
+    return null;
   }
 
   async getByAuthorId(authorId: string): Promise<ExtendedPostDTO[]> {

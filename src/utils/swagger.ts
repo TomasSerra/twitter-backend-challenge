@@ -4,7 +4,7 @@ import { Constants, NodeEnv } from '@utils/constants';
 import { Express, Request, Response } from 'express';
 
 const servers =
-  Constants.NODE_ENV === NodeEnv.DEV ? [{ url: 'http://localhost:8080/api' }] : [{ url: Constants.DEPLOY_URL }];
+  Constants.NODE_ENV === NodeEnv.DEV ? [{ url: 'http://localhost:8081/api' }] : [{ url: Constants.DEPLOY_URL }];
 
 const options = {
   definition: {
