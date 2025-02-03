@@ -45,7 +45,7 @@ export class PostServiceImpl implements PostService {
     if (errors.length > 0) {
       throw new ValidationException(errors.map((error) => ({ ...error, target: undefined, value: undefined })));
     }
-    const post = await this.repository.getById(postId);
+    const post = await this.repository.getById(userId, postId);
     // only the post owner can delete its own post
     if (!post) throw new NotFoundException('post');
     if (post.authorId !== userId) throw new ForbiddenException();
@@ -62,7 +62,7 @@ export class PostServiceImpl implements PostService {
     if (errors.length > 0) {
       throw new ValidationException(errors.map((error) => ({ ...error, target: undefined, value: undefined })));
     }
-    const post = await this.repository.getById(postId);
+    const post = await this.repository.getById(userId, postId);
 
     if (!post) throw new NotFoundException('post');
     const result = await this.userValidationRepository.isUserPublicOrFollowed(userId, post.authorId);

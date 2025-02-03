@@ -15,7 +15,6 @@ export const reactionRouter = Router();
 // Use dependency injection
 const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db), new UserRepositoryImpl(db));
 
-
 /**
  * @openapi
  * components:
@@ -115,7 +114,6 @@ const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryI
  *           enum: [LIKE, DISLIKE]
  *           description: The type of reaction (LIKE or DISLIKE).
  */
-
 
 /**
  * @openapi
@@ -226,7 +224,6 @@ reactionRouter.get('/likes', async (req: Request, res: Response, next: NextFunct
   }
 });
 
-
 /**
  * @openapi
  * /reaction/retweets:
@@ -335,7 +332,6 @@ reactionRouter.get('/retweets', async (req: Request, res: Response, next: NextFu
     next(e);
   }
 });
-
 
 /**
  * @openapi
@@ -446,7 +442,7 @@ reactionRouter.post(
   BodyValidation(ReactionActionDTO),
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = res.locals.context;
-    const data = req.body;
+    const data: ReactionActionDTO = req.body;
     const { post_id: postId } = req.params;
 
     try {

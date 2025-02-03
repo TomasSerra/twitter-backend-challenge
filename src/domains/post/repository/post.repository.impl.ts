@@ -84,7 +84,7 @@ export class PostRepositoryImpl implements PostRepository {
     });
   }
 
-  async getById(postId: string): Promise<ExtendedPostDTO | null> {
+  async getById(userId: string, postId: string): Promise<ExtendedPostDTO | null> {
     const post = await this.db.post.findUnique({
       where: {
         id: postId,

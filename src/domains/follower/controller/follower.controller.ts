@@ -10,8 +10,6 @@ import HttpStatus from 'http-status';
 
 export const followerRouter: Router = Router();
 
-
-
 // here we are applying dependency injection
 const service: FollowerService = new FollowerServiceImpl(new FollowerRepositoryImpl(db));
 
@@ -75,7 +73,6 @@ const service: FollowerService = new FollowerServiceImpl(new FollowerRepositoryI
  *           format: uuid
  *           description: The UUID of the user being unfollowed.
  */
-
 
 /**
  * @openapi
@@ -185,9 +182,8 @@ followerRouter.post('/follow/:user_id', async (req: Request, res: Response, next
   const followedId: string = req.params.user_id;
 
   try {
-    const follow: FollowerDTO = await service.createFollower(followerId, followedId);
-
     console.log(`${followerId} wants to follow ${followedId}`);
+    const follow: FollowerDTO = await service.createFollower(followerId, followedId);
 
     return res.status(HttpStatus.CREATED).json({
       message: `${followerId} Following ${followedId}`,

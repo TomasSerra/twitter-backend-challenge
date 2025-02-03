@@ -24,7 +24,9 @@ export class FollowerServiceImpl implements FollowerService {
 
     if (followerId === followedId) throw new ConflictException('cannot follow itself');
 
+    console.log('followedId', followedId);
     const followedExist: boolean = await this.repository.userExists(followedId);
+    console.log('followedExist', followedExist);
     if (!followedExist) throw new NotFoundException('followed does not exists');
 
     const oldFollow = await this.repository.getById(followerId, followedId);
