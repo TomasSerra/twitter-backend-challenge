@@ -65,7 +65,7 @@ export class UserRepositoryImpl implements UserRepository {
     });
     const publicUsersIDs: string[] = publicUsers.map((publicUsersID) => publicUsersID.id);
 
-    const recommendedUsersIDs: string[] = [...followedIDs, ...publicUsersIDs];
+    const recommendedUsersIDs: string[] = publicUsersIDs;
     if (!recommendedUsersIDs.length) return [];
 
     const users = await this.db.user.findMany({
